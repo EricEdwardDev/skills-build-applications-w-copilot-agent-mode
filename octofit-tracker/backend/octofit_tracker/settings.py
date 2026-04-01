@@ -6,11 +6,17 @@ This file contains app-level settings and configurations.
 import os
 
 # Codespace configuration for Django
+# Supports both local development (localhost) and GitHub Codespaces
+# CODESPACE_NAME environment variable is automatically set in Codespaces
+# API endpoints: http://localhost:8000/api/ (local), https://{CODESPACE_NAME}-8000.app.github.dev/api/ (Codespace)
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 if os.environ.get('CODESPACE_NAME'):
     ALLOWED_HOSTS.append(f"{os.environ.get('CODESPACE_NAME')}-8000.app.github.dev")
 
 # Database connection settings for MongoDB
+# Uses Djongo ORM for MongoDB integration with Django
+# MongoDB service runs on port 27017 (default MongoDB port)
+# ENFORCE_SCHEMA_STRUCTURE: False allows dynamic schema (typical for MongoDB)
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
@@ -37,6 +43,8 @@ DATABASES_CONFIG = {
 }
 
 # REST Framework Configuration
+# TokenAuthentication: Uses token-based authentication for API endpoints
+# PageNumberPagination: Lists 10 items per page for large datasets
 REST_FRAMEWORK_CONFIG = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
@@ -46,6 +54,8 @@ REST_FRAMEWORK_CONFIG = {
 }
 
 # CORS Configuration
+# Allows requests from React frontend running on port 3000
+# Supports both local development and GitHub Codespaces
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",

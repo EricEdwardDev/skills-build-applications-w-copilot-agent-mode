@@ -14,16 +14,30 @@ from .serializers import (
     WorkoutSuggestionSerializer
 )
 
+# REST Framework API ViewSets for OctoFit Tracker
+# All endpoints require authentication via TokenAuthentication
+# API Base URL: /api/
+# Available endpoints: /api/users/profiles/, /api/activities/, /api/teams/, /api/leaderboards/, /api/suggestions/
+
 
 class UserProfileViewSet(viewsets.ModelViewSet):
-    """ViewSet for UserProfile model"""
+    """ViewSet for UserProfile model
+    
+    Endpoints:
+    - GET /api/users/profiles/ - List all profiles (staff only)
+    - POST /api/users/profiles/ - Create new profile
+    - GET /api/users/profiles/{id}/ - Retrieve specific profile
+    - PUT/PATCH /api/users/profiles/{id}/ - Update profile
+    - DELETE /api/users/profiles/{id}/ - Delete profile
+    - GET /api/users/profiles/my_profile/ - Get current user's profile
+    """
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
 
     @action(detail=False, methods=['get'])
     def my_profile(self, request):
-        """Get current user's profile"""
+        """Get current authenticated user's profile"""
         try:
             profile = request.user.profile
             serializer = self.get_serializer(profile)
@@ -33,22 +47,33 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
 
 class ActivityViewSet(viewsets.ModelViewSet):
-    """ViewSet for Activity model"""
+    """ViewSet for Activity model - Track fitness activities
+    
+    Endpoints:
+    - GET /api/activities/ - List user's activities (filtered by user)
+    - POST /api/activities/ - Log new activity
+    - GET /api/activities/{id}/ - Retrieve specific activity
+    - PUT/PATCH /api/activities/{id}/ - Update activity
+    - DELETE /api/activities/{id}/ - Delete activity
+    - GET /api/activities/my_activities/ - Get current user's activities
+    - GET /api/activities/this_week/ - Get activities from past 7 days
+    - GET /api/activities/stats/ - Get activity statistics (totals & summaries)
+    """
     queryset = Activity.objects.all()
     serializer_class = ActivitySerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['activity_date', 'calories_burned']
-    ordering = ['-activity_date']
+    ordering = ['-activity_date']  # Most recent first
 
     def get_queryset(self):
-        """Return activities for current user or all if staff"""
+        """Return activities for current user (or all if staff member)"""
         if self.request.user.is_staff:
             return Activity.objects.all()
         return Activity.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        """Create activity for current user"""
+        """Create activity and automatically assign to current user"""
         serializer.save(user=self.request.user)
 
     @action(detail=False, methods=['get'])
