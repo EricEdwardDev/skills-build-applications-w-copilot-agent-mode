@@ -11,6 +11,19 @@ if os.environ.get('CODESPACE_NAME'):
     ALLOWED_HOSTS.append(f"{os.environ.get('CODESPACE_NAME')}-8000.app.github.dev")
 
 # Database connection settings for MongoDB
+DATABASES = {
+    'default': {
+        'ENGINE': 'djongo',
+        'NAME': 'octofit_db',
+        'ENFORCE_SCHEMA_STRUCTURE': False,
+        'CLIENT': {
+            'host': 'localhost',
+            'port': 27017,
+        }
+    }
+}
+
+# Legacy database config
 DATABASES_CONFIG = {
     'default': {
         'ENGINE': 'djongo',
