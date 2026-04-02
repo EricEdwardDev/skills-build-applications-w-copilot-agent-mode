@@ -146,6 +146,12 @@ REST_FRAMEWORK = {
     ],
 }
 
+# Django Rest Auth Configuration
+REST_AUTH = {
+    'USE_JWT': False,
+    'TOKEN_MODEL': 'rest_framework.authtoken.models.Token',
+}
+
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",

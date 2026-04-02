@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
 from rest_framework.routers import DefaultRouter
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -33,6 +34,8 @@ def api_root(request):
     return Response({
         'api': f"{base_url}/api/",
         'admin': f"{base_url}/admin/",
+        'auth_login': f"{base_url}/api/auth/login/",
+        'auth_logout': f"{base_url}/api/auth/logout/",
         'users': f"{base_url}/api/users/profiles/",
         'activities': f"{base_url}/api/activities/",
         'teams': f"{base_url}/api/teams/",
@@ -41,7 +44,9 @@ def api_root(request):
     })
 
 urlpatterns = [
+    path('', api_root, name='root'),
     path('admin/', admin.site.urls),
     path('api/', api_root, name='api-root'),
+    path('api/auth/', include('dj_rest_auth.urls')),
     path('api/', include('octofit_tracker.urls')),
 ]
